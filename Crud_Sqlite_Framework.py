@@ -11,6 +11,7 @@ def getColumns():
 	for record in rawData:
 		fields.append(record[1])
 
+
 def create():
 	userData = []
 	[userData.append(input("Enter the " + field + ": "))for field in fields]
@@ -20,58 +21,76 @@ def create():
 			value += "?,"
 		else:
 			value += "?"	
-	cursor.execute("INSERT INTO " + TABLENAME + " VALUES(" + value + ")", userData)
-	connection.commit()
-	print("Record added successfully.")
+	try:		
+		cursor.execute("INSERT INTO " + TABLENAME + " VALUES(" + value + ")", userData)
+		connection.commit()
+		print("number_of_rows affected =", cursor.rowcount)
+		if (cursor.rowcount > 0):
+			print("Record added successfully.")
+		else: 
+			print("Record insertion failed.")
+
+	except Exception as e:
+		print("Error occured.", e)
+		print("Record insertion failed.")
 
 def read():
-	records = connection.execute("SELECT * FROM " +  TABLENAME)
-	for field in fields:
-		print(field, end = " ")
-	for record in records:
-		print("\n")
-		for data in record:
-			print(data, end = " ")
+	try:
+		records = connection.execute("SELECT * FROM " +  TABLENAME)
+		for field in fields:
+			print(field, end = " ")
+		for record in records:
+			print("\n")
+			for data in record:
+				print(data, end = " ")
+	except Exception as e:
+		print("Error occured.", e)
+		print("Record reading is  failed.") 
 		
 
 def update():
 	tempId = input("Enter " + fields[0] + " to update the record: ")
-	query = cursor.execute("SELECT * FROM " + TABLENAME)
-	found = 0
 	counter = 1
-	for data in query:
-		if data[0] == tempId:
-			print("Record match is found")
-			for x in range(1, len(fields)):
-				print(str(counter) + ". " + fields[x])
-				counter += 1
+	for x in range(1, len(fields) - 1):
+		print(str(counter) + ". " + fields[x])
+		counter += 1
+	try:
+		option = int(input("Select one option to update:  "))
+		if option > 0 and option < (len(fields) - 1):
+			tempData =  input("Enter new " + fields[option] + " : ")
+			cursor.execute(" UPDATE " + TABLENAME + " SET " +  fields[option] + " = ? WHERE " + fields[0] + " = ?", (tempData, tempId))
+			connection.commit()
+			print("number_of_rows affected =", cursor.rowcount)
+		else: 
+			print("Invalid option.")
 
-			option = int(input("Select one option to update:  "))
-			if option < 1 or option > (len(fields) - 1):
-				print("no such option available.")
-			else:
-				tempData =  input("Enter new " + fields[option] + " : ")
-				cursor.execute(" UPDATE " + TABLENAME + " SET " +  fields[option] + " = ? WHERE " + fields[0] + " = ?", (tempData, tempId))
-				found = 1
-				connection.commit()
-				print("Record updated successfully.")
+	except Exception as e:
+		print("Error occured.", e)
+		print("Record updation failed.")
+	else:
+		if (cursor.rowcount > 0):
+			print("Record updated successfully.")
+		else:
+			print("Record updated unsuccessful.")
 
-	if found == 0:
-		print(fields[0] + " is not found.")
-
+	
+	
 
 def delete():
-	found = 0
 	tempId = input("Enter " + fields[0] + " to delete the record: ")
-	records = cursor.execute("SELECT * FROM " +  TABLENAME)
-	for record in records:
-		if record[0] == tempId:
-			cursor.execute("DELETE FROM " + TABLENAME + " WHERE " + fields[0] + " = " + tempId)
-			found = 1
-			connection.commit()
-			print("Record deleted successfully")
-	if found == 0:
-		print(fields[0] + " is not found.")
+	try:
+		cursor.execute(" UPDATE " + TABLENAME + " SET " +  fields[-1] + " = ? WHERE " + fields[0] + " = ?", ("0", tempId))
+		connection.commit()
+		print("number_of_rows affected =", cursor.rowcount)
+		if (cursor.rowcount > 0):
+			print("Record deleted successfully.")
+		else:
+			print("Record deletion is not successful.")
+
+	except Exception as e:
+		print("Error occured.", e)
+		print("Record deletion is not successful.")
+		
 
 
 

@@ -26,10 +26,13 @@ def create():
 
 def read():
 	records = connection.execute("SELECT * FROM " +  TABLENAME)
+	for field in fields:
+		print(field, end = " ")
 	for record in records:
-		for x in record:
-			print(x, end = " ")
 		print("\n")
+		for data in record:
+			print(data, end = " ")
+		
 
 def update():
 	tempId = input("Enter " + fields[0] + " to update the record: ")
@@ -44,11 +47,15 @@ def update():
 				counter += 1
 
 			option = int(input("Select one option to update:  "))
-			tempData =  input("Enter new " + fields[option] + " : ")
-			cursor.execute(" UPDATE " + TABLENAME + " SET " +  fields[option] + " = ? WHERE " + fields[0] + " = ?", (tempData, tempId))
-			found = 1
-			connection.commit()
-			print("Record updated successfully.")
+			if option < 1 or option > (len(fields) - 1):
+				print("no such option available.")
+			else:
+				tempData =  input("Enter new " + fields[option] + " : ")
+				cursor.execute(" UPDATE " + TABLENAME + " SET " +  fields[option] + " = ? WHERE " + fields[0] + " = ?", (tempData, tempId))
+				found = 1
+				connection.commit()
+				print("Record updated successfully.")
+
 	if found == 0:
 		print(fields[0] + " is not found.")
 

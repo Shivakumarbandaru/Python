@@ -6,10 +6,15 @@ cursor = connection.cursor()
 TABLENAME = "FRAMEWORK_TABLE"
 fields = []
 
+
 def getColumns():
 	rawData = cursor.execute("pragma table_info({})".format(TABLENAME))  #syntax: {}.format(value) //  string.format(var1, var2,...)
 	for record in rawData:
 		fields.append(record[1])
+	if len(fields) == 0:
+		print("Table is not found")
+		exit(0)
+	
 
 
 def create():
@@ -31,12 +36,13 @@ def create():
 			print("Record insertion failed.")
 
 	except Exception as e:
-		print("Error occured.", e)
+		print("Error occured.", e, type)
+		connection.rollback()
 		print("Record insertion failed.")
 
 def read():
 	try:
-		records = connection.execute("SELECT * FROM " +  TABLENAME)
+		records = cursor.execute("SELECT * FROM " +  TABLENAME + " WHERE " + fields[-1] + " = 1")
 		for field in fields:
 			print(field, end = " ")
 		for record in records:
@@ -58,7 +64,7 @@ def update():
 		option = int(input("Select one option to update:  "))
 		if option > 0 and option < (len(fields) - 1):
 			tempData =  input("Enter new " + fields[option] + " : ")
-			cursor.execute(" UPDATE " + TABLENAME + " SET " +  fields[option] + " = ? WHERE " + fields[0] + " = ?", (tempData, tempId))
+			cursor.execute(" UPDATE " + TABLENAME + " SET " +  fields[option] + " = ? WHERE " + fields[0] + " = ? AND " + fields[-1] + " = 1", (tempData, tempId))
 			connection.commit()
 			print("number_of_rows affected =", cursor.rowcount)
 		else: 
@@ -66,12 +72,13 @@ def update():
 
 	except Exception as e:
 		print("Error occured.", e)
+		connection.rollback()
 		print("Record updation failed.")
 	else:
 		if (cursor.rowcount > 0):
 			print("Record updated successfully.")
 		else:
-			print("Record updated unsuccessful.")
+			print("ID is not found.")
 
 	
 	
@@ -85,17 +92,34 @@ def delete():
 		if (cursor.rowcount > 0):
 			print("Record deleted successfully.")
 		else:
-			print("Record deletion is not successful.")
+			print("ID is not found.")
 
 	except Exception as e:
 		print("Error occured.", e)
+		connection.rollback()
 		print("Record deletion is not successful.")
-		
+
+
+
+def search():
+	tempId = input("Enter " + fields[0] + " to search the record: ")
+	try:
+		records = cursor.execute("SELECT * FROM " +  TABLENAME + " WHERE " + fields[0] + " = " + tempId)
+		for field in fields:
+			print(field, end = " ")
+		for record in records:
+			print("\n")
+			for data in record:
+				print(data, end = " ")
+
+	except Exception as e:
+		print("Error occured.", e)
 
 
 
 def exitFromMenu():
 	print("Thank you.")
+	connection.commit()
 	connection.close()
 	exit()
 
@@ -104,7 +128,13 @@ def showMenu():
 	while True:
 		print("\nChoose one option: ")
 		print(open(MENU_FILE).read())
-		[create, read, update, delete, exitFromMenu][int(input("Enter your choice: ")) - 1]()
+		option = int(input("Enter your choice: ")) 
+		if option > 0:
+			try:
+				[create, read, update, delete, search, exitFromMenu][option - 1]()
+			except Exception as e:
+				print("Error occured.", e)
+
 
 getColumns()
 showMenu()	

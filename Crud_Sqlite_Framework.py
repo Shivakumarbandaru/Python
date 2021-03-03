@@ -67,6 +67,10 @@ def update():
 			cursor.execute(" UPDATE " + TABLENAME + " SET " +  fields[option] + " = ? WHERE " + fields[0] + " = ? AND " + fields[-1] + " = 1", (tempData, tempId))
 			connection.commit()
 			print("number_of_rows affected =", cursor.rowcount)
+			if (cursor.rowcount > 0):
+			print("Record updated successfully.")
+			else:
+				print("ID is not found.")
 		else: 
 			print("Invalid option.")
 
@@ -74,13 +78,7 @@ def update():
 		print("Error occured.", e)
 		connection.rollback()
 		print("Record updation failed.")
-	else:
-		if (cursor.rowcount > 0):
-			print("Record updated successfully.")
-		else:
-			print("ID is not found.")
-
-	
+		
 	
 
 def delete():

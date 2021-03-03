@@ -37,8 +37,8 @@ def create():
 
 	except Exception as e:
 		print("Error occured.", e, type)
-		connection.rollback()
 		print("Record insertion failed.")
+		connection.rollback()
 
 def read():
 	try:
@@ -76,8 +76,8 @@ def update():
 
 	except Exception as e:
 		print("Error occured.", e)
-		connection.rollback()
 		print("Record updation failed.")
+		connection.rollback()
 		
 	
 
@@ -94,8 +94,8 @@ def delete():
 
 	except Exception as e:
 		print("Error occured.", e)
-		connection.rollback()
 		print("Record deletion is not successful.")
+		connection.rollback()
 
 
 
@@ -109,7 +109,6 @@ def search():
 			print("\n")
 			for data in record:
 				print(data, end = " ")
-
 	except Exception as e:
 		print("Error occured.", e)
 

@@ -28,9 +28,9 @@ def create():
 			value += "?"	
 	try:		
 		cursor.execute("INSERT INTO " + TABLENAME + " VALUES(" + value + ")", userData)
-		connection.commit()
 		print("number_of_rows affected =", cursor.rowcount)
 		if (cursor.rowcount > 0):
+			connection.commit()
 			print("Record added successfully.")
 		else: 
 			print("Record insertion failed.")
@@ -65,10 +65,10 @@ def update():
 		if option > 0 and option < (len(fields) - 1):
 			tempData =  input("Enter new " + fields[option] + " : ")
 			cursor.execute(" UPDATE " + TABLENAME + " SET " +  fields[option] + " = ? WHERE " + fields[0] + " = ? AND " + fields[-1] + " = 1", (tempData, tempId))
-			connection.commit()
 			print("number_of_rows affected =", cursor.rowcount)
 			if (cursor.rowcount > 0):
-			print("Record updated successfully.")
+				connection.commit()
+				print("Record updated successfully.")
 			else:
 				print("ID is not found.")
 		else: 
@@ -85,9 +85,9 @@ def delete():
 	tempId = input("Enter " + fields[0] + " to delete the record: ")
 	try:
 		cursor.execute(" UPDATE " + TABLENAME + " SET " +  fields[-1] + " = ? WHERE " + fields[0] + " = ?", ("0", tempId))
-		connection.commit()
 		print("number_of_rows affected =", cursor.rowcount)
 		if (cursor.rowcount > 0):
+			connection.commit()
 			print("Record deleted successfully.")
 		else:
 			print("ID is not found.")
@@ -109,6 +109,7 @@ def search():
 			print("\n")
 			for data in record:
 				print(data, end = " ")
+
 	except Exception as e:
 		print("Error occured.", e)
 

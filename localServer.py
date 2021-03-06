@@ -9,7 +9,7 @@ socketObject.listen(5)               			     # Now wait for client connection.
 
 while True:
    clientSocket, address = socketObject.accept()    			     # Establish connection with client.
-   print ('Got connection from', address)
+   print('Got connection from', address)
    result = bytes("Connection to server is established.", 'utf-8') # converts srting to bytes
    clientSocket.send(result)										 # This method transmits message
    clientSocket.close()               							 # Close the connection

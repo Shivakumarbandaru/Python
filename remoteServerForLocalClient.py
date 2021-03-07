@@ -1,17 +1,14 @@
-''' Remote server for local client '''
-
+'' Remote server for local client '''
 import socket
-socketObject = socket.socket()                                       		# Create a socket object
-host = socket.gethostname()
-port = 12346                                                                # Reserve a port for your service.
-socketObject.bind((host, port))                                             # This method binds address (hostname, port number pair) to socket.
-socketObject.listen(5)                                                     
 
+socketObject = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+ip = '165.22.14.77'
+socketObject.bind((ip, 8888))
+socketObject.listen(1)
 while True:
-   clientSocket, address = socketObject.accept()                            # Establish connection with client.
-   print('Got connection from', address)
-   result = bytes("Connection to server is established.", 'utf-8')          
-   clientSocket.send(result)                                                                             
-   clientSocket.close()                                                     # Close the connection
-
+    clientSocket, addr = socketObject.accept()
+    print("Connection established")
+    result = bytes("Connection to server is established.", 'utf-8')
+    clientSocket.send(result)
+    clientSocket.close()
 
